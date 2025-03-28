@@ -2,11 +2,19 @@ import os
 import time
 import requests
 import threading
+import logging
 from flask import Flask
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 app = Flask(__name__)
+
+# Configuração do logger
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 def configure_retry_strategy():
     """Configuração de estratégia de retry robusta."""
@@ -45,38 +53,65 @@ def make_request(url):
         )
         
         if response.status_code == 200:
-            print(f"Requisição bem-sucedida: {response.status_code}")
+            logger.info(f"Requisição bem-sucedida para {url}: {response.status_code}")
         else:
-            print(f"Requisição não bem-sucedida: {response.status_code}")
+            logger.warning(f"Requisição não bem-sucedida para {url}: {response.status_code}")
         
         return response.status_code
     
     except requests.exceptions.RequestException as e:
-        print(f"Erro na requisição: {e}")
+        logger.error(f"Erro na requisição para {url}: {e}")
         return None
 
-def periodic_request(url):
-    """Função para realizar requisições periódicas."""
+def periodic_request_for_site(url, interval):
+    """Função para realizar requisições periódicas para o site Sente Maldita."""
     while True:
+        logger.info(f"Fazendo requisição para {url}")
         make_request(url)
-        time.sleep(120)  # Intervalo de 2 minutos
+        logger.info(f"Requisição completa. Aguardando {interval} segundos.")
+        time.sleep(interval)
+
+def periodic_request_for_self(url, interval):
+    """Função para realizar requisições periódicas para o próprio serviço."""
+    while True:
+        logger.info(f"Fazendo requisição para o próprio serviço {url}")
+        make_request(url)
+        logger.info(f"Requisição completa. Aguardando {interval} segundos.")
+        time.sleep(interval)
 
 @app.route('/')
 def home():
     """Rota inicial para confirmar que o serviço está rodando."""
+    logger.info("Requisição recebida na rota principal")
     return "Serviço de Keep-Alive está ativo!", 200
 
-def start_background_thread(url):
-    """Inicia thread para requisições em segundo plano."""
-    thread = threading.Thread(target=periodic_request, args=(url,), daemon=True)
-    thread.start()
+def start_background_threads():
+    """Inicia threads para requisições em segundo plano."""
+    # Thread para o site Sente Maldita (a cada 2 minutos)
+    logger.info("Iniciando thread para o site Sente Maldita a cada 120 segundos")
+    site_thread = threading.Thread(
+        target=periodic_request_for_site, 
+        args=('https://tokens.sentecamaldita.com.br/', 120), 
+        daemon=True
+    )
+    site_thread.start()
+    
+    # Thread para o próprio serviço (a cada 1 minuto)
+    logger.info("Iniciando thread para o próprio serviço a cada 60 segundos")
+    self_thread = threading.Thread(
+        target=periodic_request_for_self, 
+        args=('https://keepalive-nzb6.onrender.com', 60), 
+        daemon=True
+    )
+    self_thread.start()
 
 if __name__ == '__main__':
-    target_url = 'https://tokens.sentecamaldita.com.br/'
+    logger.info("Iniciando serviço de Keep-Alive")
     
-    # Inicia thread de requisições
-    start_background_thread(target_url)
+    # Inicia threads de requisições com diferentes intervalos
+    start_background_threads()
     
     # Porta definida para o Render
     port = int(os.environ.get('PORT', 10000))
+    logger.info(f"Iniciando servidor Flask na porta {port}")
     app.run(host='0.0.0.0', port=port)
