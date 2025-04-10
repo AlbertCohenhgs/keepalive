@@ -87,7 +87,6 @@ def home():
 
 def start_background_threads():
     """Inicia threads para requisições em segundo plano."""
-    # Thread para o site Sente Maldita (a cada 2 minutos)
     logger.info("Iniciando thread para o site Sente Maldita a cada 120 segundos")
     site_thread = threading.Thread(
         target=periodic_request_for_site, 
@@ -96,7 +95,14 @@ def start_background_threads():
     )
     site_thread.start()
     
-    # Thread para o próprio serviço (a cada 1 minuto)
+    logger.info("Iniciando thread para o site o serviço beta 20s")
+    beta_thread = threading.Thread(
+        target=periodic_request_for_site, 
+        args=('https://betastm.onrender.com/logging', 20), 
+        daemon=True
+    )
+    beta_thread.start()
+    
     logger.info("Iniciando thread para o próprio serviço a cada 60 segundos")
     self_thread = threading.Thread(
         target=periodic_request_for_self, 
