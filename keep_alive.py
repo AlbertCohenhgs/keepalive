@@ -120,7 +120,7 @@ def get_status():
         "status": "online",
         "uptime": get_uptime(),
         "monitored_sites": [
-            {"url": "https://tkbeta.onrender.com": 120},
+            {"url": "https://tkbeta.onrender.com", "interval": 120},
             {"url": "https://keepalive-yjlx.onrender.com", "interval": 120}
         ]
     }
