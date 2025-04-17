@@ -87,7 +87,7 @@ def make_request(url):
         return None
 
 def periodic_request_for_site(url, interval):
-    """Função para realizar requisições periódicas para o site Sente Maldita."""
+    """Função para realizar requisições periódicalhlts para o site Sente Maldita."""
     while True:
         logger.info(f"Fazendo requisição para {url}")
         make_request(url)
@@ -120,9 +120,8 @@ def get_status():
         "status": "online",
         "uptime": get_uptime(),
         "monitored_sites": [
-            {"url": "https://projetokens.sentecamaldita.com.br/", "interval": 120},
-            {"url": "https://betastm.onrender.com/login", "interval": 20},
-            {"url": "https://keepalive-nzb6.onrender.com", "interval": 60}
+            {"url": "https://tkbeta.onrender.com": 120},
+            {"url": "https://keepalive-yjlx.onrender.com", "interval": 120}
         ]
     }
     return jsonify(status)
