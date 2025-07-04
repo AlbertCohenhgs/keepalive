@@ -147,7 +147,7 @@ def start_background_threads():
     logger.info("Iniciando thread para o próprio serviço a cada 60 segundos")
     self_thread = threading.Thread(
         target=periodic_request_for_self, 
-        args=('https://keepalive-yjlx.onrender.com', 60), 
+        args=('https://keepalive-nzb6.onrender.com', 60), 
         daemon=True
     )
     self_thread.start()
