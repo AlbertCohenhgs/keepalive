@@ -120,14 +120,13 @@ def get_status():
         "status": "online",
         "uptime": get_uptime(),
         "monitored_sites": [
-            {"url": "https://tkbeta.onrender.com", "interval": 120},
+            {"url": "https://tokens.sentecamaldita.com.br", "interval": 120},
             {"url": "https://keepalive-yjlx.onrender.com", "interval": 120}
         ]
     }
     return jsonify(status)
 
 def get_uptime():
-    """Calcula o tempo de atividade do serviço."""
     delta = datetime.datetime.now() - start_time
     hours, remainder = divmod(delta.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
