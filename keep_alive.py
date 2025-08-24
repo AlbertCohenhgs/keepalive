@@ -137,7 +137,7 @@ def start_background_threads():
     logger.info("Iniciando thread para o site Sente Maldita a cada 120 segundos")
     site_thread = threading.Thread(
         target=periodic_request_for_site, 
-        args=('https://tkbeta.onrender.com/login', 120), 
+        args=('https://tokens.sentecamaldita.com.br', 120), 
         daemon=True
     )
     site_thread.start()
